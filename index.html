@@ -1,52 +1,47 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <title>Simple Login</title>
+
 <style>
-  body {
+  body{
     font-family: Arial;
-    background: #f1f1f1;
-    display: flex;
-    justify-content: center;
-    margin-top: 60px;
+    background:#f1f1f1;
+    display:flex;
+    justify-content:center;
+    margin-top:60px;
   }
-  .box {
-    background: #fff;
-    padding: 20px;
-    width: 300px;
-    border-radius: 8px;
-    box-shadow: 0 0 8px #ccc;
+  .box{
+    background:#fff;
+    padding:20px;
+    width:300px;
+    border-radius:8px;
+    box-shadow:0 0 8px #ccc;
   }
-  input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 8px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
+  input,button{
+    width:100%;
+    padding:8px;
+    margin-top:8px;
+    border-radius:5px;
   }
-  button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 10px;
-    border: 0;
-    background: #2979ff;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
+  input{ border:1px solid #aaa; }
+  button{
+    padding:10px;
+    border:0;
+    background:#2979ff;
+    color:#fff;
+    cursor:pointer;
   }
-  .error {
-    color: red;
-    font-size: 13px;
-  }
+  .error{ color:red;font-size:13px; }
 </style>
+
 </head>
 <body>
 
 <div class="box">
   <h2>Login</h2>
 
-  <input type="text" id="user" placeholder="Username">
+  <input id="user" placeholder="Username">
   <p class="error" id="uErr"></p>
 
   <input type="email" id="email" placeholder="Email">
@@ -59,25 +54,24 @@
 </div>
 
 <script>
-function validate() {
-  let user = document.getElementById("user").value.trim();
-  let email = document.getElementById("email").value.trim();
-  let pass = document.getElementById("pass").value.trim();
+  const $ = id => document.getElementById(id);
 
-  let ok = true;
+  function err(id, msg){
+    $(id).textContent = msg;
+    return msg === "";
+  }
 
-  document.getElementById("uErr").innerHTML = user === "" ? "Enter username" : "";
-  if(user === "") ok = false;
+  function validate(){
+    const user = $("user").value.trim(),
+          email = $("email").value.trim(),
+          pass = $("pass").value.trim();
 
-  document.getElementById("eErr").innerHTML = (!email.includes("@") || !email.includes(".")) 
-    ? "Enter valid email" : "";
-  if(!email.includes("@") || !email.includes(".")) ok = false;
+    const uOK = err("uErr", user ? "" : "Enter username");
+    const eOK = err("eErr", (email.includes("@") && email.includes(".")) ? "" : "Enter valid email");
+    const pOK = err("pErr", pass.length >= 5 ? "" : "Min 5 chars");
 
-  document.getElementById("pErr").innerHTML = pass.length < 5 ? "Min 5 chars" : "";
-  if(pass.length < 5) ok = false;
-
-  if(ok) alert("Login Successful!");
-}
+    if(uOK && eOK && pOK) alert("Login Successful!");
+  }
 </script>
 
 </body>
