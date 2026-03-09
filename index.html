@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Login — Form Validation (JS)</title>
+
+  <style>
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:#e5e7eb;
+      --accent:#2563eb;
+      --accent-2:#06b6d4;
+      --error:#dc2626;
+      --ok:#16a34a;
+      --radius:14px;
+      --shadow:0 10px 24px rgba(2,6,23,.08);
+      --ring:0 0 0 3px rgba(37,99,235,.18);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(900px 700px at 0% 0%, rgba(37,99,235,.10), transparent 60%),
+        radial-gradient(900px 700px at 100% 10%, rgba(6,182,212,.10), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      display:grid;
+      place-items:center;
+      padding: clamp(16px, 4vw, 32px);
+    }
+
+    .card{
+      width: min(420px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(18px, 3vw, 24px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .title{
+      text-align:center;
+      margin: 0 0 4px;
+      font-weight: 800;
+      font-size: clamp(22px, 4.2vw, 28px);
+      background: linear-gradient(100deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .subtitle{
+      margin: 0;
+      text-align:center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    label{
+      font-weight: 600;
+      margin-top: 6px;
+    }
+    .field{
+      margin-top:6px;
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      transition: .2s;
+    }
+    .field:focus-within{
+      border-color: var(--accent);
+      box-shadow: var(--ring);
+    }
+    .field input{
+      border: 0;
+      outline: 0;
+      width: 100%;
+      font-size: 16px;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .hint{
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .error-msg{
+      display:none;
+      margin: 6px 2px 0;
+      color: var(--error);
+      font-size: 13px;
+    }
+    .ok-msg{
+      display:none;
+      margin: 6px 2px 0;
+      color: var(--ok);
+      font-size: 13px;
+    }
+
+    .actions{
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .btn{
+      flex:1;
+      border:0;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: 800;
+      cursor:pointer;
+      transition: transform .12s ease, filter .2s ease;
+    }
+    .btn-primary{
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 18px rgba(37,99,235,.18);
+    }
+    .btn-primary:hover{ filter: brightness(1.05); }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    .btn-ghost{
+      background: #eef2ff;
+      border: 1px solid var(--border);
+      color: #0f172a;
+    }
+
+    .form-status{
+      display:none;
+      margin-top: 4px;
+      border-radius: 10px;
+      padding: 10px;
+      font-weight: 700;
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+    }
+    .form-status.ok{
+      display:block;
+      color: #065f46;
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+    }
+    .form-status.err{
+      display:block;
+      color: #7f1d1d;
+      background: #fee2e2;
+      border-color: #fecaca;
+    }
+
+    footer.note{
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="card" role="main">
+    <h1 class="title">Login</h1>
+    <p class="subtitle">Validate Username, Email, and Password using JavaScript</p>
+
+    <form id="loginForm" novalidate>
+      <!-- Username -->
+      <label for="username">Username</label>
+      <div class="field">
+        <input type="text" id="username" name="username" placeholder="Enter username" autocomplete="username" />
+      </div>
+      <p class="hint">3–20 characters, letters & numbers only.</p>
+      <div id="userErr" class="error-msg">Username must be 3–20 characters and alphanumeric.</div>
+      <div id="userOk" class="ok-msg">Looks good ✅</div>
+
+      <!-- Email -->
+      <label for="email">Email ID</label>
+      <div class="field">
+        <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div id="emailErr" class="error-msg">Please enter a valid email address.</div>
+      <div id="emailOk" class="ok-msg">Valid email ✅</div>
+
+      <!-- Password -->
+      <label for="password">Password</label>
+      <div class="field">
+        <input type="password" id="password" name="password" placeholder="Minimum 6 characters" autocomplete="current-password" />
+      </div>
+      <p class="hint">Minimum 6 characters. Include a number for stronger security.</p>
+      <div id="passErr" class="error-msg">Password must be at least 6 characters.</div>
+      <div id="passOk" class="ok-msg">Strong enough ✅</div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" id="resetBtn" class="btn btn-ghost">Reset</button>
+      </div>
+
+      <!-- Form status -->
+      <div id="formStatus" class="form-status" aria-live="polite" aria-atomic="true"></div>
+    </form>
+
+    <footer class="note">Demo: interactive validation (client-side only, no backend)</footer>
+  </main>
+
+  <script>
+    (function(){
+      const $ = (id) => document.getElementById(id);
+
+      const form = $('loginForm');
+      const username = $('username');
+      const email = $('email');
+      const password = $('password');
+
+      const userErr = $('userErr'), userOk = $('userOk');
+      const emailErr = $('emailErr'), emailOk = $('emailOk');
+      const passErr = $('passErr'), passOk = $('passOk');
+      const formStatus = $('formStatus');
+      const resetBtn = $('resetBtn');
+
+      // Validators
+      const usernameRe = /^[a-zA-Z0-9]{3,20}$/;
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      // Password: at least 6 chars (you can extend with more rules)
+      function isValidPassword(v){ return typeof v === 'string' && v.length >= 6; }
+
+      function show(el){ el.style.display = 'block'; }
+      function hide(el){ el.style.display = 'none'; }
+
+      function validateUsername(){
+        const v = username.value.trim();
+        const ok = usernameRe.test(v);
+        if(ok){ hide(userErr); show(userOk); } else { show(userErr); hide(userOk); }
+        return ok;
+      }
+
+      function validateEmail(){
+        const v = email.value.trim();
+        const ok = emailRe.test(v);
+        if(ok){ hide(emailErr); show(emailOk); } else { show(emailErr); hide(emailOk); }
+        return ok;
+      }
+
+      function validatePassword(){
+        const v = password.value;
+        const ok = isValidPassword(v);
+        if(ok){ hide(passErr); show(passOk); } else { show(passErr); hide(passOk); }
+        return ok;
+      }
+
+      // Real-time validation
+      username.addEventListener('input', validateUsername);
+      email.addEventListener('input', validateEmail);
+      password.addEventListener('input', validatePassword);
+
+      // Submit handler
+      form.addEventListener('submit', function(e){
+        e.preventDefault(); // prevent actual submission (demo)
+        const uOK = validateUsername();
+        const eOK = validateEmail();
+        const pOK = validatePassword();
+
+        if(uOK && eOK && pOK){
+          formStatus.textContent = 'Login successful (demo).';
+          formStatus.className = 'form-status ok';
+        } else {
+          formStatus.textContent = 'Please fix the highlighted errors.';
+          formStatus.className = 'form-status err';
+        }
+      });
+
+      // Reset
+      function resetForm(){
+        form.reset();
+        [userErr, emailErr, passErr, userOk, emailOk, passOk].forEach(hide);
+        formStatus.className = 'form-status';
+        formStatus.style.display = 'none';
+        username.focus();
+      }
+      resetBtn.addEventListener('click', resetForm);
+
+      // Keyboard: Enter submits (default); Esc resets
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') resetForm();
+      });
+
+      // Init focus
+      window.addEventListener('DOMContentLoaded', () => username.focus());
+    })();
+  </script>
+</body>
+</html>
